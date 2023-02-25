@@ -6,23 +6,8 @@
 
     <div id="posts">
         {% for post in posts %}
-            <details>
-                <summary>
-                    {{post.title}}
-                    //q: what is this above?
-                    //a: this is a jinja2 template variable
-                    //q: how do I add these variables?
-                    //a: in the app.py file, in the blog() function, add a variable called posts
-                    
-                </summary>
-
-                <p>
-                    {{post.content}}
-                </p>
-
-            </details>
+            {% include "posts/" + post %}
         {% endfor %}
     </div>
-
     
 {% endblock %}
