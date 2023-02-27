@@ -1,26 +1,27 @@
 {% extends "base.html" %}
-
 {% block content %}
 
-    <h1>Bence Danko</h1>
-    
-    <p>
-    Trying out new things
-    </p>
+<div id="posts">
+    {% for post in posts %}
 
-    <p> 
-    I am currently running on the Azure webapp service.
-    </p>
+    <div class="post">
+        <details>
 
-    <details>
-        <summary>
-            About Me
-        </summary>
+            <summary>
+                {{ post['title'] }}
+            </summary>
 
-        <p>
-            On my way to becoming a developer.
-        </p>
+            <p style="font-size:10pt;">
+                <em>{{ post['date'] }}</em>
+            </p>
 
-    </details>
+            <p>
+                {{ post['content'] }}
+            </p>
+
+        </details>
+        {% endfor %}
+    </div>
+</div>
 
 {% endblock %}
