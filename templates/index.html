@@ -8,20 +8,35 @@
         <details>
 
             <summary>
-                {{ post['title'] }}
+                {{ post['title'] }} 
+                <mark><em>{{ post['date'] }}</em></mark> 
+
             </summary>
 
-            <p style="font-size:10pt;">
-                <em>{{ post['date'] }}</em>
-            </p>
-
             <p>
-                {{ post['content'] }}
+                {{ post['content'] | safe }}
             </p>
 
         </details>
         {% endfor %}
     </div>
 </div>
+
+<!-- 
+<div class = 'wrapper' >
+    <div class = 'sidebar'>
+        <h2>Categories</h2>
+        <ul>
+            
+            {% for category in categories %}
+            <li><a href={{url_for('category', category=category)}}>{{category}}</a></li>
+            {% endfor %}
+            
+
+            <li>Anything</li>
+        </ul>
+    </div>
+</div>
+-->
 
 {% endblock %}
