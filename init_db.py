@@ -1,6 +1,7 @@
 import sqlite3
 from datetime import datetime
 import os
+import markdown
 
 conn = None
 
@@ -22,16 +23,15 @@ try:
     topics = ""
 
     for post in os.listdir('templates/posts'):
-        title = post
-        for file in os.listdir('templates/posts/' + post):
-            if file == 'content.html':
-                with open('templates/posts/' + post + '/' + file) as f:
-                    content = f.read()
-                    date = os.path.getmtime('templates/posts/' + post + '/' + file)
-                    date = datetime.fromtimestamp(date).strftime('%Y-%m-%d %H:%M:%S')
+        title = post.rsplit('.', 1)[0]
+        with open('templates/posts/' + post ) as f:
+            markdown_content = f.read()
+            content = markdown.markdown(markdown_content)
+            timestamp = os.path.getmtime('templates/posts/' + post)
+            date = datetime.fromtimestamp(timestamp).strftime('%Y-%m-%d %H:%M:%S')
 
-        cur.execute("INSERT INTO posts (title, content, date, topics) VALUES (?, ?, ?, ?)",
-            (title, content, date, topics))
+        cur.execute("INSERT INTO posts (timestamp, title, content, date, topics) VALUES (?, ?, ?, ?, ?)",
+            (timestamp, title, content, date, topics))
     
     print("Posts added successfully")
 
