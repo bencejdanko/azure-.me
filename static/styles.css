@@ -1,6 +1,8 @@
+/*
 .wrapper {
     position: relative;
 }
+*/
 
 .wrapper .sidebar {
     width: 100px;
@@ -39,21 +41,16 @@ ul {
 }
 
 li a {
-    font-family : Calibri;
-    font-weight: normal;
     display: inline;
-    display: block;
     color: #ffffff;
     text-align: center;
     padding: 14px 16px;
     text-decoration: none;
-    display: inline;
 }
 
-b {
-    font-family : Calibri;
-    font-weight: lighter;
-    color: #ffffff;
+img {
+    max-width: 100%;
+    height: auto;
 }
 
 /*

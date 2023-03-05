@@ -1,0 +1,68 @@
+#include <unistd.h>
+#include <stdio.h>
+#include <fcntl.h>
+#include <errno.h>
+
+int main(int argc, char *argv[])
+{
+    int file1, file2;
+    char buffer[80];
+    int read_b;
+
+    if (argc < 3)
+    {
+        printf("Error: Not enough arguments");
+        return 1;
+    }
+
+    if (argc > 3)
+    {
+        printf("Error: Too many arguments");
+        return 1;
+    }
+
+    file1 = open(argv[1], O_RDONLY);
+
+    if (file1 == -1)
+    {
+        printf("Error: Could not open file1");
+        return 1;
+    }
+
+    file2 = open(argv[2], O_RDONLY);
+
+    if (file2 == -1)
+    {
+        file2 = open(argv[2], O_CREAT, 0777);
+        file2 = open(argv[2], O_WRONLY, 0777);
+    }
+
+    else
+    {
+        char choice;
+        printf("File2 already exists. (O)verwrite or (A)ppend? ");
+        scanf("%c", &choice);
+        if (choice == 'O')
+        {   
+            file2 = open(argv[2], O_TRUNC | O_WRONLY, 0777);
+        }
+        else if (choice == 'A')
+        {
+            file2 = open(argv[2], O_WRONLY | O_APPEND, 0777);
+        }
+        else
+        {
+            printf("Error: Invalid choice");
+            return 1;
+        }
+    }
+
+    while ((read_b = read(file1, buffer, 80)) > 0)
+    {
+        write(file2, buffer, read_b);
+    }
+
+    close(read_b);
+    close(file1);
+    close(file2);
+}

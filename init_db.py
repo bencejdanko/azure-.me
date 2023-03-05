@@ -30,8 +30,8 @@ try:
             timestamp = os.path.getmtime('templates/posts/' + post)
             date = datetime.fromtimestamp(timestamp).strftime('%Y-%m-%d %H:%M:%S')
 
-        cur.execute("INSERT INTO posts (timestamp, title, content, date, topics) VALUES (?, ?, ?, ?, ?)",
-            (timestamp, title, content, date, topics))
+        cur.execute("INSERT INTO posts (title, content, date, topics) VALUES (?, ?, ?, ?)",
+            (title, content, date, topics))
     
     print("Posts added successfully")
 

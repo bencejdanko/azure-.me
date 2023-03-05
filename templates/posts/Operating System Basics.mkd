@@ -1,11 +1,123 @@
-## Table of Contents
- [I. Why learn ](#example)
- [Example2](#example2)
- [Third Example](#third-example)
 
-## Example
-Example text for 1
-## Example2
-Example test for 2
-## Third Example
-## [Fourth Example]
+
+## Why learn operating systems?
+Some of the greatest ingenuities in system design and communication are within OS software. Understanding it's control flow and design patterns will help you design your own systems.
+
+CS 149 (Operating Systems) at SJSU requires CS 147 (Architecture), and is a part of the wider upper elective curriculum to study past CS achievements, and what designs have worked.
+
+This post is primarily a compiliation of what we've learned up to now, and what is valuable to know at the basic level (first exam). 
+
+## System bus
+Operating systems communicate at low levels through what we call the *system bus*. Communication is primarily done with three kinds of lines:
+
+1. Address bus: a unidirectional line from CPU to memory that specifies a memory address.
+2. Data bus: bidirectional lines that carry data between various devices.
+3. Control bus: primarily unidirectional lines that carry control signals.
+
+## Interrupts
+Devices connected to the system bus can signal the CPU to perform an action. This is done through an *interrupt*.
+
+Devices need to connect to an interrupt controller to manage interrupt priority. 
+
+### Interrupt controller
+For our course, we use cascading Intel 8259 chips as reference, though there are modern architecture innovations. The basic idea is that the controller connects to and manages the priority of devices.
+
+The controller sends lines to the CPU to signal an interrupt, and from where. The CPU can also acknowledge the interrupt. The CPU also contains a mask pin, NMI, to indicate when certain interrupts should be ignored for the moment.
+
+### ISR
+
+When hardware devices are connected, they also typically store an Interrupt Service Routine (ISR) in the memory's *interrupt vector table*. When the CPU recieves a signal from the controller, it uses that information to determine what Routine it should execute the vector table.
+
+### Interrupt process
+
+The interrupt process for the CPU is as follows: 
+
+1. Controller sends interrupt signal to CPU pin
+2. CPU finishes current execution
+3. CPU polls signals, and if a signal exists, sends acknowledgement
+4. CPU saves the program state
+5. CPU loads ISR
+6. ISR saves contents of registers
+7. ISR determines cause of interrupt and invokes it's handler
+8. ISR restores registers
+9. CPU restores program state
+
+Interrupts are just one part of the CPU's system of process execution.
+
+## Processing cycle
+
+A process can generally be in five states: new, ready, waiting, running, and terminated.
+
+![alt text](/static/operating-system-basics/process-cycle.png "Process Cycle")
+
+### Ready & schedule queue
+
+The ready queue is a list of processes that are ready to be executed. Rather, it consists of pointers to Process Control Blocks (PCB), data structures that contain information about the process, such as the process state, registers, and memory. 
+
+The schedule queue is solely responsible for whom is to go next.
+
+### Schedule dispatch to running
+
+When a process is ready for running, the schedule dispatcher is responsible for context switches, and transferring it's PCB to the CPU for execution.
+
+### Running to waiting
+   
+   When a process is waiting for an event, it is moved to the waiting queue. The process is then suspended until the event occurs.
+
+   Waiting is a part of the OS system calls. You can actually test out calls with the c programming language in a linux environment.
+
+## Linux
+
+Windows has recently allowed for a linux subsystem, which is what I've been using to test out the code and shell commands. It's also convenient as it automates a server for communication with the windows host, which can also be used with vscode to code.
+
+### Shell commands and scripts
+
+Understanding basic shell commands is also necessary. touch, echo, mkdir, cd, ls, and rm are all basic commands that are used to manipulate files and directories. 
+
+Shell scripts are text files that contain a series of commands that are executed. Permissions are toggled with 'chmod' as follows: 
+   
+      chmod <###> <file_name>
+
+The numbers are hex values representing read, write and execute permissions for the user, group, and others. For example, if we had 1##, the user specifically would have 001 permissions in binary, or execute permissions. Or if we have 777, we get 111 111 111 in binary, which means all permissions are granted for everyone.
+
+## C programming
+
+We've tested out read(), write(), fork(), exec(), wait(), and pipe() functions for c.
+
+### read() and write()
+
+The read() and write() functions are used to read and write to files. The read() function takes a file descriptor, a buffer, and the number of bytes to read. The write() function takes a file descriptor, a buffer, and the number of bytes to write.
+
+Attached is an assignment that provides a brief example of how to copy the contents of one file to another.
+
+[hw3.txt](/static/operating-system-basics/hw3.txt)
+
+### fork() and exec()
+
+A fork() is used to create a new process returning a process ID. The process ID is used to determine whether the process is the parent or the child. The parent process will return the process ID of the child, and the child process will return 0.
+
+The exec() function is used to execute a program. The exec() function takes a path to the program, and a list of arguments. The exec() function replaces the current process with the new process. These can also be done with flavours of exec(), such as execl(), execlp(), execle(), execv(), execvp(), and execvpe().
+
+Attached is an assignment to fork() a process, and to use execv() to execute different shell scripts.
+
+[hw4.txt](/static/operating-system-basics/hw4.txt)
+
+### pipe() and wait()
+
+Once you fork() a process, you can also use a pipe() to create a unidirectional read/write pipe between them, or two for bidirectional communication. For example, [0] of a pipe is generally used for reading from one pipe, and [1] for writing from another.
+
+Processes can also wait() for eachother. This allows you to manage their order of execution, for example, you may want a parent to wait for its children to finish before executing.
+
+Attached is an assignment to fork() a process; the parent writes a message to the child with a pipe(), and then wait()s for the child to finish. The child reads it, then processes the message to reverse character capitalization. The child then writes to the pipe, and the parent reads and prints the message.
+
+[hw5.txt](/static/operating-system-basics/hw5.txt)
+
+## Summary
+
+All in all, for our first exam on our basic understanding, we've learned about the bus, interrupts, the process cycle, linux commands and scripts, and some c programming.
+
+## References
+
+[Dr. Faramarz Mortezaie, CS 149 Course Syllabus](https://www.sjsu.edu/cs/docs/pdfs/CS149-Section-02-Spring%202022.pdf)
+
+A. Silberschatz, P. Galvin, and G. Gagne, Operating System Concepts, 10 ed.
