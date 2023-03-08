@@ -21,17 +21,18 @@ try:
     content = ""
     date = ""
     topics = ""
+    timestamp = 0
 
     for post in os.listdir('templates/posts'):
         title = post.rsplit('.', 1)[0]
         with open('templates/posts/' + post ) as f:
             markdown_content = f.read()
             content = markdown.markdown(markdown_content)
-            timestamp = os.path.getmtime('templates/posts/' + post)
+            timestamp = os.path.getctime('templates/posts/' + post)
             date = datetime.fromtimestamp(timestamp).strftime('%Y-%m-%d %H:%M:%S')
 
-        cur.execute("INSERT INTO posts (title, content, date, topics) VALUES (?, ?, ?, ?)",
-            (title, content, date, topics))
+        cur.execute("INSERT INTO posts (title, timestamp, content, date, topics) VALUES (?, ?, ?, ?)",
+            (title, timestamp, content, date, topics))
     
     print("Posts added successfully")
 

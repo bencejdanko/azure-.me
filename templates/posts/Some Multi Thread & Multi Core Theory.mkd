@@ -1,0 +1,161 @@
+## Cores and threads
+
+Within processors, or cores, multiple threads can exist. In contrast to creating processes as seen before, managing threads requires less overhead. Threads comprise of their own ID, program counter, registers, and stack. 
+
+Multicore programming has two fundementals; ***data parallelism*** (data distrubution among cores) and ***task parallelism*** (thread distribution among cores).
+
+## Amdahl's law
+
+Amdahl's law can be used to determine theoretical performance gains from parallel computing in serial-parallel systems:
+
+$$Speedup \leqslant \frac{1}{S + \frac{1-S}{N}} $$
+
+S represents the proportion of time that is spent on Serial processing, and N represents the rate at which the instructions can be executed (number of cores).
+
+For example, say 75% of our system is already parallel in a 2 core system. So 25% of the system could be improved like so: 
+
+$$Speedup \leqslant \frac{1}{0.25 + \frac{1-0.25}{2}} = 1.6$$
+
+Theoretically, the system could improve by 1.6 times. Say that N approaches infinity in the same system:
+
+$$Speedup \leqslant \frac{1}{0.25 + \frac{1-0.25}{\infty}} = \frac{1}{0.25} = 4$$
+
+No matter how many cores we add to the system, we max out at a 4 times improvement.
+
+To also demonstrate, say we have a 40% parallel system. With 8 cores, we will see a speedup of 
+
+$$Speedup \leqslant \frac{1}{0.6 + \frac{1-0.6}{8}} = 1.53$$
+
+And with 16 cores, we will see a speedup of
+
+$$Speedup \leqslant \frac{1}{0.6 + \frac{1-0.6}{16}} = 1.6$$
+
+As cores increase, their benefits only become marginally better; improvements then rely on the concurrency of programs.
+
+## Multithread programming
+
+Windows, Java and POSIX Pthreads are commonly used multithreading libraries. We can go ahead and use Pthreads in our C programs.
+
+```C
+/*Create a thread & ID*/
+pthread_t tid;
+pthread_t workers[NUMBER_OF_THREADS] //or an array if we want more
+
+/*Create several threads*/
+for (i = 0; i < NUMBER_OF_THREADS; i++)
+{
+    pthread_create(&workers[i],0,worker,&darts_per_thread);
+}
+```
+
+It's also important to note ```pthread_join()``` for future management of threads, as it will cause one thread to wait for termination of another.
+
+## Apply with Monte Carlo
+
+The textbook describes a unique statistical problem, which has been elaborated by statistical researcher Rick Wicklin, linked below.
+
+The Monte Carlo technique describes a way to produce numerical results using repeated, random sampling. 
+
+Say we want to produce pi by random sampling. Given that the area of a unit circle is pi, and we inscribe the circle inside 2x2 square, we know that the proportion of the circle over the square will be pi area units over 4 area units. If we just multiply this proportion by 4 we get pi. 
+
+So to solve this problem, we can code a multi-threaded simulation of circle hits in this scenario, generate the pi/4 proportion, and then multiply it by 4.
+
+Here is a coded solution provided below:
+
+```C
+#include <pthread.h>
+#include <stdio.h>
+#include <stdlib.h>
+#include <math.h>
+#include <time.h>
+
+
+/*We declare function 'worker.' It takes a single void pointer 'param', and returns a 'void *' pointer, & not returning a value when called. It's used when we want to process varying data from the different threads.*/
+void *worker(void *param); 
+
+#define NUMBER_OF_DARTS 50000000
+#define NUMBER_OF_THREADS 2
+
+/*hits in circle*/
+int circle_count = 0;
+
+/* We generate a random integer first with random(), then divide it by the maximum double to produce a random double proportion, between -1 & 1. */
+double random_double() {
+    return random() / ((double)RAND_MAX + 1); 
+}
+
+int main (int argc, const char * argv[]) {
+    int darts_per_thread(NUMBER_OF_DARTS / NUMBER_OF_THREADS); //TASK DISTRIBUTION
+    int i;
+    double estimated_pi;
+
+    pthread_t workers[NUMBER_OF_THREADS]; //our array of threads
+
+    /*seed random number generator with the current time in seconds since 1970.*/
+    srandom((unsigned)time(NULL));
+
+    /* We create multiple threads using POSIX. workers[] stores our thread ID and sets default attributes.
+    
+    When created, we pass the 'worker' function as what the thread will execute. The &darts_per_second is the provided parameter for the function.
+    */
+    for (i = 0; i < NUMBER_OF_THREADS; i++)
+        pthread_create(&workers[i], 0, worker, &darts_per_thread);
+
+
+    /*
+    We iterate over each of our threads. The parameters in this case allow us to wait for the specified thread to finish executing. This way, the program won't continue until all the threads have finished their responsibilities. 
+    */
+    for (i = 0; i< NUMBER_OF_THREADS; i++)
+        pthread_join(workers[i], NULL);
+
+    /*We estimate pi using the generated proportion*/
+    estimated_pi = 4.0 * circle_count / NUMBER_OF_DARTS;
+
+    printf("Pi = %f\n",estimated_pi);
+
+    return 0;
+}
+
+/*Our thread function to plot theoretical circle hits.*/
+
+void *worker(void *param) {
+    int number_of_darts;
+    number_of_darts = *((int *)param); //we retrieve an int pointer from what is given in the parameters
+    int i;
+    int hit_count=0;
+    double x,y;
+
+    /*
+    We throw our darts
+    */
+    for (i = 0; i < number_of_darts; i++) {
+
+        /*Generate random plots (-1 to 1) from our random double function*/
+        x = random_double() * 2.0 - 1.0;
+        y = random_double() * 2.0 - 1.0;
+
+        /*using sqrt this way uses the pythagorean to find the distance at which x and y strays from the origin. If it is less than 1, it is less than the radius of the unit circle and we've made a 'hit.' */
+        if (sqrt(x*x + y*y) < 1 )
+            ++hit_count; //increment our local hit variable
+    }
+
+    /*We can increment our global hit count with our local one, since our global variable is shared memory between the threads.*/
+    circle_count += hit_count; 
+
+    /*Thread terminates.*/
+    pthread_exit(0);
+}
+
+```
+
+## Summary
+
+We've discussed cores, threads and their differences. We've also described Amdahl's law involving their theoretical efficacy in practice. We've described a C coding example that implements the POSIX threading library & thread distribution. 
+
+## References
+
+[Dr. Faramarz Mortezaie, CS 149 Course Syllabus](https://www.sjsu.edu/cs/docs/pdfs/CS149-Section-02-Spring%202022.pdf)
+
+[Dr. Rick Wicklin, Monte Carlo estimates of pi and an important statistical lesson](https://blogs.sas.com/content/iml/2016/03/14/monte-carlo-estimates-of-pi.html#:~:text=To%20compute%20Monte%20Carlo%20estimates,the%20curve%20is%20%CF%80%20%2F%204.)
+
+A. Silberschatz, P. Galvin, and G. Gagne, Operating System Concepts, 10 ed.
