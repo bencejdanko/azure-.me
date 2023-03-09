@@ -1,5 +1,4 @@
 
-
 ## Why learn operating systems?
 Some of the greatest ingenuities in system design and communication are within OS software. Understanding it's control flow and design patterns will help you design your own systems.
 
@@ -48,7 +47,7 @@ Interrupts are just one part of the CPU's system of process execution.
 
 A process can generally be in five states: new, ready, waiting, running, and terminated.
 
-![alt text](/static/operating-system-basics/process-cycle.png "Process Cycle")
+![alt text](/static/operating-system-basics/process-cycle.png)
 
 ### Ready & schedule queue
 

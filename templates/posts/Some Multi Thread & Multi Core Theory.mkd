@@ -1,3 +1,4 @@
+
 ## Cores and threads
 
 Within processors, or cores, multiple threads can exist. In contrast to creating processes as seen before, managing threads requires less overhead. Threads comprise of their own ID, program counter, registers, and stack. 
@@ -70,7 +71,8 @@ Here is a coded solution provided below:
 #include <time.h>
 
 
-/*We declare function 'worker.' It takes a single void pointer 'param', and returns a 'void *' pointer, & not returning a value when called. It's used when we want to process varying data from the different threads.*/
+/*We declare function 'worker.' 
+Returns pointer to given data. */
 void *worker(void *param); 
 
 #define NUMBER_OF_DARTS 50000000
@@ -79,31 +81,36 @@ void *worker(void *param);
 /*hits in circle*/
 int circle_count = 0;
 
-/* We generate a random integer first with random(), then divide it by the maximum double to produce a random double proportion, between -1 & 1. */
+/* Generate a random double proportion first with random().*/
 double random_double() {
     return random() / ((double)RAND_MAX + 1); 
 }
 
 int main (int argc, const char * argv[]) {
-    int darts_per_thread(NUMBER_OF_DARTS / NUMBER_OF_THREADS); //TASK DISTRIBUTION
+    int darts_per_thread(NUMBER_OF_DARTS / NUMBER_OF_THREADS);
     int i;
     double estimated_pi;
 
-    pthread_t workers[NUMBER_OF_THREADS]; //our array of threads
+    pthread_t workers[NUMBER_OF_THREADS]; // array of threads
 
-    /*seed random number generator with the current time in seconds since 1970.*/
+    /*seed random number generator with current time.*/
     srandom((unsigned)time(NULL));
 
-    /* We create multiple threads using POSIX. workers[] stores our thread ID and sets default attributes.
-    
-    When created, we pass the 'worker' function as what the thread will execute. The &darts_per_second is the provided parameter for the function.
+    /* Create multiple threads using POSIX. workers[] stores 
+    our thread ID and sets default attributes.
+    When created, we pass the 'worker' function as what 
+    the thread will execute. The &darts_per_second 
+    is the provided parameter for the function.
     */
     for (i = 0; i < NUMBER_OF_THREADS; i++)
         pthread_create(&workers[i], 0, worker, &darts_per_thread);
 
 
     /*
-    We iterate over each of our threads. The parameters in this case allow us to wait for the specified thread to finish executing. This way, the program won't continue until all the threads have finished their responsibilities. 
+    We iterate over each of our threads. The parameters in 
+    this case allow us to wait for the specified thread to 
+    finish executing. This way, the program won't continue 
+    until all the threads have finished their responsibilities. 
     */
     for (i = 0; i< NUMBER_OF_THREADS; i++)
         pthread_join(workers[i], NULL);
@@ -120,7 +127,7 @@ int main (int argc, const char * argv[]) {
 
 void *worker(void *param) {
     int number_of_darts;
-    number_of_darts = *((int *)param); //we retrieve an int pointer from what is given in the parameters
+    number_of_darts = *((int *)param); //we retrieve an int pointer
     int i;
     int hit_count=0;
     double x,y;
@@ -134,12 +141,16 @@ void *worker(void *param) {
         x = random_double() * 2.0 - 1.0;
         y = random_double() * 2.0 - 1.0;
 
-        /*using sqrt this way uses the pythagorean to find the distance at which x and y strays from the origin. If it is less than 1, it is less than the radius of the unit circle and we've made a 'hit.' */
+        /*using sqrt this way uses the pythagorean to find the 
+        distance at which x and y strays from the origin. If it is 
+        less than 1, it is less than the radius of the unit circle 
+        and we've made a 'hit.' */
         if (sqrt(x*x + y*y) < 1 )
             ++hit_count; //increment our local hit variable
     }
 
-    /*We can increment our global hit count with our local one, since our global variable is shared memory between the threads.*/
+    /*We can increment our global hit count with our local one, 
+    since our global variable is shared memory between the threads.*/
     circle_count += hit_count; 
 
     /*Thread terminates.*/

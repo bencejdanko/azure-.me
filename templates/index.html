@@ -12,10 +12,8 @@
                 <mark><em>{{ post['date'] }}</em></mark> 
 
             </summary>
-
-            <p>
-                {{ post['content'] | safe }}
-            </p>
+            
+            {{ post['content'] | safe}}
 
         </details>
         {% endfor %}

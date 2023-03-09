@@ -2,6 +2,8 @@ import sqlite3
 from datetime import datetime
 import os
 import markdown
+import markdown.extensions.fenced_code
+import markdown.extensions.codehilite
 
 conn = None
 
@@ -25,8 +27,8 @@ try:
     for post in os.listdir('templates/posts'):
         title = post.rsplit('.', 1)[0]
         with open('templates/posts/' + post ) as f:
-            markdown_content = f.read()
-            content = markdown.markdown(markdown_content)
+            mk_content = f.read()
+            content = markdown.markdown(mk_content, extensions=['fenced_code' , 'codehilite', 'mdx_math'])
             timestamp = os.path.getctime('templates/posts/' + post)
             date = datetime.fromtimestamp(timestamp).strftime('%Y-%m-%d %H:%M:%S')
 
