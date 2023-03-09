@@ -20,7 +20,6 @@ try:
     title = ""
     content = ""
     date = ""
-    topics = ""
     timestamp = 0
 
     for post in os.listdir('templates/posts'):
@@ -31,8 +30,8 @@ try:
             timestamp = os.path.getctime('templates/posts/' + post)
             date = datetime.fromtimestamp(timestamp).strftime('%Y-%m-%d %H:%M:%S')
 
-        cur.execute("INSERT INTO posts (title, timestamp, content, date, topics) VALUES (?, ?, ?, ?)",
-            (title, timestamp, content, date, topics))
+        cur.execute("INSERT INTO posts (title, timestamp, content, date) VALUES (?, ?, ?, ?)",
+            (title, timestamp, content, date))
     
     print("Posts added successfully")
 

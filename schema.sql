@@ -7,6 +7,5 @@ CREATE TABLE posts (
     timestamp DATETIME NOT NULL,
     date TEXT NOT NULL,
     title TEXT NOT NULL,
-    content TEXT NOT NULL,
-    topics TEXT NOT NULL
+    content TEXT NOT NULL
 );
