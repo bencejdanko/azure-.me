@@ -1,40 +1,22 @@
 {% extends "base.html" %}
 {% block content %}
 
-<div id="posts">
-    {% for post in posts %}
+{% for post in posts %}
 
-    <div class="post">
-        <details>
+<div class="post">
+    <details>
 
-            <summary>
-                {{ post['title'] }} 
-                <mark><em>{{ post['date'] }}</em></mark> 
+        <summary>
+            <a href={{'/post/%s'%post['id']}}>{{ post['title'] }} </a>
+            <mark><em>{{ post['date'] }}</em></mark>
+        </summary>
 
-            </summary>
-            
-            {{ post['content'] | safe}}
 
-        </details>
-        {% endfor %}
-    </div>
+        {{ post['content'] | safe}}
+
+    </details>
+    {% endfor %}
 </div>
-
-<!-- 
-<div class = 'wrapper' >
-    <div class = 'sidebar'>
-        <h2>Categories</h2>
-        <ul>
-            
-            {% for category in categories %}
-            <li><a href={{url_for('category', category=category)}}>{{category}}</a></li>
-            {% endfor %}
-            
-
-            <li>Anything</li>
-        </ul>
-    </div>
 </div>
--->
 
 {% endblock %}

@@ -28,7 +28,8 @@ try:
         title = post.rsplit('.', 1)[0]
         with open('templates/posts/' + post ) as f:
             mk_content = f.read()
-            content = markdown.markdown(mk_content, extensions=['fenced_code' , 'codehilite', 'mdx_math'])
+            content = markdown.markdown(mk_content, 
+                                        extensions=['fenced_code' , 'codehilite'])
             timestamp = os.path.getctime('templates/posts/' + post)
             date = datetime.fromtimestamp(timestamp).strftime('%Y-%m-%d %H:%M:%S')
 

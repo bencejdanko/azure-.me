@@ -9,27 +9,27 @@ Multicore programming has two fundementals; ***data parallelism*** (data distrub
 
 Amdahl's law can be used to determine theoretical performance gains from parallel computing in serial-parallel systems:
 
-$$Speedup \leqslant \frac{1}{S + \frac{1-S}{N}} $$
+$$ {{ Speedup \leqslant \frac{1}{S + \frac{1-S}{N}}  }} $$
 
 S represents the proportion of time that is spent on Serial processing, and N represents the rate at which the instructions can be executed (number of cores).
 
 For example, say 75% of our system is already parallel in a 2 core system. So 25% of the system could be improved like so: 
 
-$$Speedup \leqslant \frac{1}{0.25 + \frac{1-0.25}{2}} = 1.6$$
+<div>$$ { Speedup \leqslant \frac{1}{0.25 + \frac{1-0.25}{2}} = 1.6 } $$</div>
 
 Theoretically, the system could improve by 1.6 times. Say that N approaches infinity in the same system:
 
-$$Speedup \leqslant \frac{1}{0.25 + \frac{1-0.25}{\infty}} = \frac{1}{0.25} = 4$$
+$${ Speedup \leqslant \frac{1}{0.25 + \frac{1-0.25}{\infty}} = \frac{1}{0.25} = 4 } $$
 
 No matter how many cores we add to the system, we max out at a 4 times improvement.
 
 To also demonstrate, say we have a 40% parallel system. With 8 cores, we will see a speedup of 
 
-$$Speedup \leqslant \frac{1}{0.6 + \frac{1-0.6}{8}} = 1.53$$
+$$ { Speedup \leqslant \frac{1}{0.6 + \frac{1-0.6}{8}} = 1.53 } $$
 
 And with 16 cores, we will see a speedup of
 
-$$Speedup \leqslant \frac{1}{0.6 + \frac{1-0.6}{16}} = 1.6$$
+$$ { Speedup \leqslant \frac{1}{0.6 + \frac{1-0.6}{16}} = 1.6 } $$
 
 As cores increase, their benefits only become marginally better; improvements then rely on the concurrency of programs.
 
